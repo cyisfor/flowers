@@ -10,7 +10,7 @@ math.randomseed(os.time())
 
 local DEBUG = 1
 
-local MAX_RATIO = 200
+local MAX_RATIO = 300
 local GROWING_DELAY = 1000
 
 local FLOWERS = {
