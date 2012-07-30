@@ -1,13 +1,17 @@
--- Flowers mod by VanessaE, rewritten from Ironzorg"s original
+-- Flowers mod by VanessaE, rewritten from Ironzorg's original
+--
+-- 2012-07-30, using the version that was last included in Neko259's Nature 
+-- Pack.
+--
+-- License:  WTFPL
+--
 
 math.randomseed(os.time())
 
 local DEBUG = 1
 
---local MAX_RATIO = 200
---local GROWING_DELAY = 600
-local MAX_RATIO = 10
-local GROWING_DELAY = 50
+local MAX_RATIO = 200
+local GROWING_DELAY = 1000
 
 local FLOWERS = {
 	{ "Rose",		"rose", 		GROWING_DELAY*2, "15", "4" },
@@ -66,6 +70,8 @@ for i in ipairs(FLOWERS) do
 		description = flowerdesc,
 		drawtype = "plantlike",
 		tiles = { "flower_"..flower..".png" },
+		inventory_image = "flower_"..flower..".png",
+		wield_image = "flower_"..flower..".png",
 		sunlight_propagates = true,
 		paramtype = "light",
 		walkable = false,
@@ -77,6 +83,8 @@ for i in ipairs(FLOWERS) do
 		description = flowerdesc.." in a pot",
 		drawtype = "plantlike",
 		tiles = { "flower_"..flower.."_pot.png" },
+		inventory_image = "flower_"..flower.."_pot.png",
+		wield_image = "flower_"..flower.."_pot.png",
 		sunlight_propagates = true,
 		paramtype = "light",
 		walkable = false,
@@ -104,6 +112,8 @@ minetest.register_node("flowers:flower_waterlily", {
 	description = "Waterlily",
 	drawtype = "raillike",
 	tiles = { "flower_waterlily.png" },
+	inventory_image = "flower_waterlily.png",
+	wield_image  = "flower_waterlily.png",
 	sunlight_propagates = true,
 	paramtype = "light",
 	walkable = false,

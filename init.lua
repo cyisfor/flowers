@@ -48,7 +48,9 @@ spawn_on_surfaces = function(spawndelay, spawnflower, spawnradius, spawnchance, 
 			local n_top = minetest.env:get_node(p_top)
 			local rnd = math.random(1, MAX_RATIO)
 			if (MAX_RATIO - spawnchance < rnd) and (n_top.name == "air") and is_node_loaded(p_top) then
-				if (minetest.env:find_node_near(p_top, spawnradius, "group:flower") == nil ) and (minetest.env:get_node_light(p_top, nil) > 4) then
+				if (minetest.env:find_node_near(p_top, spawnradius, "group:flower") == nil )
+				   and (minetest.env:find_node_near(p_top, spawnradius, spawnflower) == nil )
+				   and (minetest.env:get_node_light(p_top, nil) > 4) then
 					dbg("Spawning "..spawnflower.." at ("..p_top.x..", "..p_top.y..", "..p_top.z..") on "..spawnsurface)
 					minetest.env:add_node(p_top, { name = spawnflower })
 				end
