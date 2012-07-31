@@ -8,7 +8,7 @@
 
 math.randomseed(os.time())
 
-local DEBUG = 1
+local DEBUG = 0
 
 local MAX_RATIO = 225
 local GROWING_DELAY = 1000
