@@ -1,9 +1,8 @@
--- Flowers mod by VanessaE, rewritten from Ironzorg's original
+-- Flowers mod by VanessaE, 2012-08-01
+-- Rewritten from Ironzorg's last update, 
+-- as included in Nature Pack Controlled
 --
--- 2012-07-30, using the version that was last included in Neko259's Nature 
--- Pack.
---
--- License:  WTFPL
+-- License:  WTFPL (applies to all parts and textures)
 --
 
 math.randomseed(os.time())
@@ -18,10 +17,10 @@ local FLOWERS = {
 	{ "Tulip",		"tulip",		GROWING_DELAY,   "10", "2" },
 	{ "Yellow Dandelion",	"dandelion_yellow",	GROWING_DELAY,   "10", "2" },
 	{ "White Dandelion",	"dandelion_white",	GROWING_DELAY*2, "15", "4" },
+	{ "Blue Geranium",	"geranium",		GROWING_DELAY,   "10", "4" },
 	{ "Viola",		"viola",		GROWING_DELAY*2, "15", "4" },
 	{ "Cotton Plant",	"cotton",		GROWING_DELAY,   "10", "2" }
 }
-	
 
 local dbg = function(s)
 	if DEBUG == 1 then
