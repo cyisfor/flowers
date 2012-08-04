@@ -7,19 +7,19 @@
 
 math.randomseed(os.time())
 
-local DEBUG = 0
+local DEBUG = 1
 
-local MAX_RATIO = 225
-local GROWING_DELAY = 1000
+local GROWING_DELAY = 300
+local GROWCHANCE = 50 -- larger = less chance to grow
 
 local FLOWERS = {
-	{ "Rose",		"rose", 		GROWING_DELAY*2, "15", "4" },
-	{ "Tulip",		"tulip",		GROWING_DELAY,   "10", "2" },
-	{ "Yellow Dandelion",	"dandelion_yellow",	GROWING_DELAY,   "10", "2" },
-	{ "White Dandelion",	"dandelion_white",	GROWING_DELAY*2, "15", "4" },
-	{ "Blue Geranium",	"geranium",		GROWING_DELAY,   "10", "4" },
-	{ "Viola",		"viola",		GROWING_DELAY*2, "15", "4" },
-	{ "Cotton Plant",	"cotton",		GROWING_DELAY,   "10", "2" }
+	{ "Rose",		"rose", 		GROWING_DELAY*2,	15,	GROWCHANCE*2	},
+	{ "Tulip",		"tulip",		GROWING_DELAY,		10,	GROWCHANCE	},
+	{ "Yellow Dandelion",	"dandelion_yellow",	GROWING_DELAY,		10,	GROWCHANCE	},
+	{ "White Dandelion",	"dandelion_white",	GROWING_DELAY*2,	15,	GROWCHANCE*2	},
+	{ "Blue Geranium",	"geranium",		GROWING_DELAY,		10,	GROWCHANCE*2	},
+	{ "Viola",		"viola",		GROWING_DELAY*2,	15,	GROWCHANCE*2	},
+	{ "Cotton Plant",	"cotton",		GROWING_DELAY,		10,	GROWCHANCE	}
 }
 
 local dbg = function(s)
@@ -40,13 +40,12 @@ spawn_on_surfaces = function(spawndelay, spawnflower, spawnradius, spawnchance, 
 	minetest.register_abm({
 		nodenames = { spawnsurface },
 		interval = spawndelay,
-		chance = 30,
+		chance = spawnchance,
 
 		action = function(pos, node, active_object_count, active_object_count_wider)
 			local p_top = { x = pos.x, y = pos.y + 1, z = pos.z }	
 			local n_top = minetest.env:get_node(p_top)
-			local rnd = math.random(1, MAX_RATIO)
-			if (MAX_RATIO - spawnchance < rnd) and (n_top.name == "air") and is_node_loaded(p_top) then
+			if (n_top.name == "air") and is_node_loaded(p_top) then
 				if (minetest.env:find_node_near(p_top, spawnradius, spawnavoid) == nil )
 				   and (minetest.env:get_node_light(p_top, nil) > 4) then
 					dbg("Spawning "..spawnflower.." at ("..p_top.x..", "..p_top.y..", "..p_top.z..") on "..spawnsurface)
@@ -121,7 +120,7 @@ minetest.register_node("flowers:flower_waterlily", {
 	sounds = default.node_sound_leaves_defaults(),
 })
 
-spawn_on_surfaces(GROWING_DELAY/2, "flowers:flower_waterlily", 15, 1, "default:water_source", "group:flower")
+spawn_on_surfaces(GROWING_DELAY/2, "flowers:flower_waterlily", 15, GROWCHANCE*3, "default:water_source", "group:flower")
 
 minetest.register_craftitem("flowers:flower_pot", {
         description = "Flower Pot",
