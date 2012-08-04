@@ -9,7 +9,7 @@ math.randomseed(os.time())
 
 local DEBUG = 1
 
-local GROWING_DELAY = 300
+local GROWING_DELAY = 500 -- larger numbers = ABM runs less often
 local GROWCHANCE = 50 -- larger = less chance to grow
 
 local FLOWERS = {
