@@ -95,7 +95,7 @@ for i in ipairs(FLOWERS) do
 		sounds = default.node_sound_leaves_defaults(),
 		selection_box = {
 			type = "fixed",
-			fixed = { -0.4, -0.5, -0.4, 0.4, 0.2, 0.4 },
+			fixed = { -0.25, -0.5, -0.25, 0.25, 0.2, 0.25 },
 		},	
 	})
 
@@ -127,6 +127,10 @@ minetest.register_node("flowers:flower_waterlily", {
 	walkable = false,
 	groups = { snappy = 3,flammable=2,flower=1 },
 	sounds = default.node_sound_leaves_defaults(),
+	selection_box = {
+		type = "fixed",
+		fixed = { -0.5, -0.5, -0.5, 0.5, -0.4, 0.5 },
+	},	
 })
 
 spawn_on_surfaces(GROWING_DELAY/2, "flowers:flower_waterlily", 15, GROWCHANCE*3, "default:water_source", "group:flower")
