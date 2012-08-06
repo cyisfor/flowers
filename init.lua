@@ -75,7 +75,11 @@ for i in ipairs(FLOWERS) do
 		paramtype = "light",
 		walkable = false,
 		groups = { snappy = 3,flammable=2, flower=1 },
-		sounds = default.node_sound_leaves_defaults()
+		sounds = default.node_sound_leaves_defaults(),
+		selection_box = {
+			type = "fixed",
+			fixed = { -0.25, -0.5, -0.25, 0.25, 0.2, 0.25 },
+		},	
 	})
 
 	minetest.register_node("flowers:flower_"..flower.."_pot", {
@@ -89,6 +93,10 @@ for i in ipairs(FLOWERS) do
 		walkable = false,
 		groups = { snappy = 3,flammable=2 },
 		sounds = default.node_sound_leaves_defaults(),
+		selection_box = {
+			type = "fixed",
+			fixed = { -0.4, -0.5, -0.4, 0.4, 0.2, 0.4 },
+		},	
 	})
 
 	minetest.register_craft( {
@@ -115,6 +123,7 @@ minetest.register_node("flowers:flower_waterlily", {
 	wield_image  = "flower_waterlily.png",
 	sunlight_propagates = true,
 	paramtype = "light",
+	paramtype2 = "wallmounted",
 	walkable = false,
 	groups = { snappy = 3,flammable=2,flower=1 },
 	sounds = default.node_sound_leaves_defaults(),
@@ -126,18 +135,19 @@ spawn_on_surfaces(GROWING_DELAY/2, "flowers:flower_waterlily", 15, GROWCHANCE*3,
 
 minetest.register_node("flowers:flower_seaweed", {
 	description = "Seaweed",
-	drawtype = "raillike",
+	drawtype = "signlike",
 	tiles = { "flower_seaweed.png" },
 	inventory_image = "flower_seaweed.png",
 	wield_image  = "flower_seaweed.png",
 	sunlight_propagates = true,
 	paramtype = "light",
+	paramtype2 = "wallmounted",
 	walkable = false,
 	groups = { snappy = 3,flammable=2,flower=1 },
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
-		fixed = { -0.5, -0.5, -0.5, 0.5, -0.45, 0.5 },
+		fixed = { -0.5, -0.5, -0.5, 0.5, -0.4, 0.5 },
 	},	
 })
 
@@ -151,10 +161,10 @@ minetest.register_abm({
 		local n_light = minetest.env:get_node_light(p_top, nil) 
 		if (n_top.name == "air")
 			and is_node_loaded(p_top)
-			and (n_light < 8) and (n_light > 4)
+			and (n_light < 10) and (n_light > 4)
 			and (minetest.env:find_node_near(p_top, 1, {"default:dirt", "default:dirt_with_grass", "default:stone"}) ~= nil ) then
 				dbg("Spawning flowers:flower_seaweed at ("..p_top.x..", "..p_top.y..", "..p_top.z..") on default:water_source")
-				minetest.env:add_node(p_top, { name = "flowers:flower_seaweed" })
+				minetest.env:add_node(p_top, { name = "flowers:flower_seaweed", param2 = 1 })
 		end
 	end
 })
@@ -169,10 +179,10 @@ minetest.register_abm({
 		local n_light = minetest.env:get_node_light(p_top, nil) 
 		if (n_top.name == "air")
 			and is_node_loaded(p_top)
-			and (n_light < 8) and (n_light > 4)
+			and (n_light < 10) and (n_light > 4)
 			and (minetest.env:find_node_near(p_top, 2, "default:water_source" ) ~= nil ) then
 				dbg("Spawning flowers:flower_seaweed at ("..p_top.x..", "..p_top.y..", "..p_top.z..") on default:water_source")
-				minetest.env:add_node(p_top, { name = "flowers:flower_seaweed" })
+				minetest.env:add_node(p_top, { name = "flowers:flower_seaweed", param2 = 1 })
 		end
 	end
 })
