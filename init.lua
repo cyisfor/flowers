@@ -19,7 +19,7 @@ local FLOWERS = {
 	{ "White Dandelion",	"dandelion_white",	GROWING_DELAY*2,	15,	GROWCHANCE*2	},
 	{ "Blue Geranium",	"geranium",		GROWING_DELAY,		10,	GROWCHANCE*2	},
 	{ "Viola",		"viola",		GROWING_DELAY*2,	15,	GROWCHANCE*2	},
-	{ "Cotton Plant",	"cotton",		GROWING_DELAY,		10,	GROWCHANCE	}
+	{ "Cotton Plant",	"cotton",		GROWING_DELAY,		10,	GROWCHANCE	},
 }
 
 local dbg = function(s)
@@ -121,6 +121,59 @@ minetest.register_node("flowers:flower_waterlily", {
 })
 
 spawn_on_surfaces(GROWING_DELAY/2, "flowers:flower_waterlily", 15, GROWCHANCE*3, "default:water_source", "group:flower")
+
+-- Seaweed requires specific circumstances under which it will spawn
+
+minetest.register_node("flowers:flower_seaweed", {
+	description = "Seaweed",
+	drawtype = "raillike",
+	tiles = { "flower_seaweed.png" },
+	inventory_image = "flower_seaweed.png",
+	wield_image  = "flower_seaweed.png",
+	sunlight_propagates = true,
+	paramtype = "light",
+	walkable = false,
+	groups = { snappy = 3,flammable=2,flower=1 },
+	sounds = default.node_sound_leaves_defaults(),
+})
+
+minetest.register_abm({
+	nodenames = { "default:water_source" },
+	interval = GROWING_DELAY*2,
+	chance = GROWCHANCE*2,
+	action = function(pos, node, active_object_count, active_object_count_wider)
+		local p_top = { x = pos.x, y = pos.y + 1, z = pos.z }	
+		local n_top = minetest.env:get_node(p_top)
+		local n_light = minetest.env:get_node_light(p_top, nil) 
+		if (n_top.name == "air")
+			and is_node_loaded(p_top)
+			and (n_light < 8) and (n_light > 4)
+			and (minetest.env:find_node_near(p_top, 1, {"default:dirt", "default:dirt_with_grass", "default:stone"}) ~= nil ) then
+				dbg("Spawning flowers:flower_seaweed at ("..p_top.x..", "..p_top.y..", "..p_top.z..") on default:water_source")
+				minetest.env:add_node(p_top, { name = "flowers:flower_seaweed" })
+		end
+	end
+})
+
+minetest.register_abm({
+	nodenames = { "default:dirt", "default:dirt_with_grass", "default:stone" },
+	interval = GROWING_DELAY*2,
+	chance = GROWCHANCE*2,
+	action = function(pos, node, active_object_count, active_object_count_wider)
+		local p_top = { x = pos.x, y = pos.y + 1, z = pos.z }	
+		local n_top = minetest.env:get_node(p_top)
+		local n_light = minetest.env:get_node_light(p_top, nil) 
+		if (n_top.name == "air")
+			and is_node_loaded(p_top)
+			and (n_light < 8) and (n_light > 4)
+			and (minetest.env:find_node_near(p_top, 2, "default:water_source" ) ~= nil ) then
+				dbg("Spawning flowers:flower_seaweed at ("..p_top.x..", "..p_top.y..", "..p_top.z..") on default:water_source")
+				minetest.env:add_node(p_top, { name = "flowers:flower_seaweed" })
+		end
+	end
+})
+
+-- Additional crafts, etc.
 
 minetest.register_craftitem("flowers:flower_pot", {
         description = "Flower Pot",
