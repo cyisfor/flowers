@@ -129,7 +129,7 @@ minetest.register_node("flowers:flower_waterlily", {
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
-		fixed = { -0.5, -0.5, -0.5, 0.5, -0.4, 0.5 },
+		fixed = { -0.4, -0.5, -0.4, 0.4, -0.45, 0.4 },
 	},	
 })
 
