@@ -4,7 +4,8 @@ Changelog
 2012-08-06: Tweaked selection boxes on all nodes.  Tweaked seaweed to use 
 signlike instead of raillike drawtype, (still forced to only spawn flat as 
 usual).  Adjusted light level limits to give it more time to grow.  Created 
-this changelog file using github commit messages as the basis.
+this changelog file using github commit messages as the basis.  Shrunk the 
+geranium flower down a bit to better match the others.
 
 2012-08-03: Tuned out the random-numbers-inside-ABM stuff. Uses the ABM's 
 chance setting instead.  Should be approximately the same as before, but 

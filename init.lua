@@ -78,7 +78,7 @@ for i in ipairs(FLOWERS) do
 		sounds = default.node_sound_leaves_defaults(),
 		selection_box = {
 			type = "fixed",
-			fixed = { -0.25, -0.5, -0.25, 0.25, 0.2, 0.25 },
+			fixed = { -0.15, -0.5, -0.15, 0.15, 0.2, 0.15 },
 		},	
 	})
 
