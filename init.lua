@@ -1,32 +1,28 @@
 -- Flowers mod by VanessaE, 2012-08-01
--- Rewritten from Ironzorg's last update, 
+-- Rewritten from Ironzorg's last update,
 -- as included in Nature Pack Controlled
 --
 -- License:  WTFPL (applies to all parts and textures)
 --
 
-
 local DEBUG = 1
 
-local GROWING_DELAY = 500 -- larger numbers = ABM runs less often
-local GROWCHANCE = 50 -- larger = less chance to grow
+local GROWING_DELAY = 200  -- larger numbers = ABM runs less often
+local GROWCHANCE = 200 -- larger = less chance to grow
 
 local DI = 5 -- base distance
 
 local perlin = nil
 
-local function weightedPick(l,pos)
+local function weightedPick(l,pos,tweight)
    if perlin == nil then
       perlin = minetest.env:get_perlin(666, 1, 0, 50)
    end
-   local tweight = 0
-   for i,item in ipairs(l) do
-      tweight = tweight + item.weight
-   end
    -- somewhere between totally random and perlin
-   --local pppp = (perlin:get2d({x=pos.x,y=pos.z})+1)/2
-   local where = math.random()
-   --print("HMMM "..pppp.." => "..where)
+   local pppp = perlin:get2d({x=pos.x,y=pos.z})
+   pppp = (pppp + 1) / 2
+   local rnd = math.random()
+   local where = (pppp + rnd * 9)/10
    where = tweight * where
    tweight = 0
    for i,item in ipairs(l) do
@@ -89,15 +85,23 @@ function table.clone(l)
    return nl
 end
 
-local external = {}
-
 local function spawnOn(what)
    local flowers = {}
+   local tweight = 0
+   local function derp()
+      l = {'a','b','c','d','e','f','g','h','i','j','k','l'}
+      for i = 1,100 do
+         print(weightedPick(flowers,{x=math.random()*500,z=math.random()*500},tweight))
+      end
+      error("beep")
+   end
+   --minetest.register_globalstep(derp)
+
    function add(flower)
       dbg("adding "..flower.name)
-      flower.id = flower.id or "flowers:flower_"..flower.name
       flower.fails = flower.fails or 0.10
-      if flower.register == nil or flower.register ~= external then
+      if flower.id == nil then
+         flower.id = "flowers:flower_"..flower.name
          local registerargs = table.clone(defaultRegisterArgs)
          if flower.register then
             for name,value in pairs(flower.register) do
@@ -116,6 +120,7 @@ local function spawnOn(what)
       if flower.weight == nil then
          flower.weight = 1 / flower.rarity
       end
+      tweight = tweight + flower.weight
       if flower.avoid == nil then
          flower.avoid = flower.id
       end
@@ -127,7 +132,7 @@ local function spawnOn(what)
    end
 
    local function pickAFlower(pos,node)
-      return weightedPick(flowers,pos)
+      return weightedPick(flowers,pos,tweight)
    end
 
    minetest.register_abm(
@@ -137,20 +142,26 @@ local function spawnOn(what)
          chance = GROWCHANCE,
          action =
             function(pos, node, active_object_count, active_object_count_wider)
-               local flower = pickAFlower(pos,node)
-
-               if flower == nil then return end
-               if math.random() < flower.fails then return end
+               -- if math.random() < flower.fails then return end
                local p_top = { x = pos.x, y = pos.y + 1, z = pos.z }
                local n_top = minetest.env:get_node(p_top)
                if (n_top.name == "air") and is_node_loaded(p_top) then
+                  local flower = pickAFlower(pos,node)
+                  if flower == nil then return end
+
                   if (not nodeNear(p_top,flower.radius,flower.avoid)) then
                      local n_light = minetest.env:get_node_light(p_top, nil)
                      if (n_light > 4) then
                         if (flower.additionalConditions == nil
                             or flower.additionalConditions(p_top,n_top,n_light)) then
                            dbg("Spawning "..flower.name.." at ("..p_top.x..", "..p_top.y..", "..p_top.z..") on "..node.name)
-                           minetest.env:add_node(p_top, { name = flower.id })
+                           local info = { name = flower.id }
+                           if flower.spawn then
+                              for n,v in pairs(flower.spawn) do
+                                 info[n] = v
+                              end
+                           end
+                           minetest.env:add_node(p_top, info)
                         end
                      end
                   end
@@ -158,6 +169,19 @@ local function spawnOn(what)
             end
       })
    return add
+end
+
+function onlyInPatches(seed,size,space)
+   local perlin = nil
+   if size >= space then
+      error("Size must be less than space.")
+   end
+   return function(pos,node,light)
+             if perlin == nil then
+                perlin = minetest.env:get_perlin(seed, 3, 0.5, space)
+             end
+             return perlin:get2d({x=pos.x,y=pos.z}) < 2*size/space-1
+          end
 end
 
 addFlower = spawnOn({"default:dirt_with_grass","default:dirt"})
@@ -211,7 +235,6 @@ addFlower(
    { description = "Tree Sapling",
      id = "default:sapling",
      name = "sapling",
-     register = external,
      rarity = 3,
      radius = DI*10,
      avoid = {"default:sapling","group:tree"}
@@ -221,7 +244,6 @@ addFlower(
    { description = "Papyrus",
      id = "default:papyrus",
      name = "papyrus",
-     register = external,
      rarity = 1,
      radius = DI,
      additionalConditions =
@@ -234,7 +256,6 @@ addSandFlower(
    { description = "Cactus",
      id = "default:cactus",
      name = "cactus",
-     register = external,
      rarity = 5,
      radius = DI*25,
   })
@@ -243,7 +264,6 @@ addSandFlower(
    { description = "Dry brush",
      id = "default:dry_shrub",
      name = "shrub",
-     register = external,
      rarity = 1,
      radius = DI*5
   })
@@ -263,26 +283,34 @@ addSeaFlower(
      }
   })
 
-addSeaFlower(
-   { description = "Seaweed",
-     name = "seaweed",
-     rarity = 1,
-     radius = DI,
-     avoid = "flowers:flower_seaweed",
-     register = {
-        drawtype = "signlike",
-        paramtype2 = "wallmounted",
-        selection_box = {
-           type = "fixed",
-           fixed = { -0.5, -0.5, -0.5, 0.5, -0.4, 0.5 },
-        }
-     },
-     additionalConditions =
-        function(pos,node,light)
-           if light > 10 then return false end
-           return nodeNear(pos,1,{"default:dirt", "default:dirt_with_grass", "default:stone"})
-        end
-  })
+if true then
+   local destroy = minetest.require('porting','destroy')
+   destroy('flowers:flower_seaweed');
+else
+   addSeaFlower(
+      { description = "Seaweed",
+        name = "seaweed",
+        rarity = 1,
+        radius = DI,
+        avoid = "flowers:flower_seaweed",
+        spawn = {
+           param2 = 1
+        },
+        register = {
+           drawtype = "signlike",
+           paramtype2 = "wallmounted",
+           selection_box = {
+              type = "fixed",
+              fixed = { -0.5, -0.5, -0.5, 0.5, -0.4, 0.5 },
+           }
+        },
+        additionalConditions =
+           function(pos,node,light)
+              if light > 10 then return false end
+              return nodeNear(pos,1,{"default:dirt", "default:dirt_with_grass", "default:stone"})
+           end
+     })
+end
 
 -- Additional crafts, etc.
 
